@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
+$fallbackAppKey = ((bool) env('VERCEL') || (bool) env('VERCEL_ENV'))
+    ? 'base64:VYV8dQ0IMrArBXcA82Ol9Mk3k7LNeNaA5jY88MtXgFp='
+    : null;
+
 return [
 
     /*
@@ -122,7 +126,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key' => env('APP_KEY', $fallbackAppKey),
 
     'cipher' => 'AES-256-CBC',
 
