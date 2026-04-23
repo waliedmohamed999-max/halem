@@ -2,24 +2,22 @@
 
 use Illuminate\Support\Str;
 
-if (! function_exists('mysqlSslCaAttribute')) {
-    function mysqlSslCaAttribute(): ?int
+if (! function_exists('mysqlConnectionOptions')) {
+    function mysqlConnectionOptions(): array
     {
+        $sslCa = env('MYSQL_ATTR_SSL_CA');
+        if (! extension_loaded('pdo_mysql') || ! is_string($sslCa) || trim($sslCa) === '') {
+            return [];
+        }
+
         if (class_exists(\Pdo\Mysql::class) && defined(\Pdo\Mysql::class . '::ATTR_SSL_CA')) {
             /** @var int $attribute */
             $attribute = constant(\Pdo\Mysql::class . '::ATTR_SSL_CA');
 
-            return $attribute;
+            return [$attribute => $sslCa];
         }
 
-        if (defined('PDO::MYSQL_ATTR_SSL_CA')) {
-            /** @var int $attribute */
-            $attribute = constant('PDO::MYSQL_ATTR_SSL_CA');
-
-            return $attribute;
-        }
-
-        return null;
+        return [];
     }
 }
 
@@ -79,9 +77,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') && mysqlSslCaAttribute() !== null ? array_filter([
-                mysqlSslCaAttribute() => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => mysqlConnectionOptions(),
         ],
 
         'pgsql' => [
