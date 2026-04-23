@@ -11,6 +11,18 @@
   },
   "routes": [
     {
+      "src": "/$",
+      "dest": "/public/vercel-fallback.html"
+    },
+    {
+      "src": "/ar$",
+      "dest": "/public/vercel-fallback.html"
+    },
+    {
+      "src": "/en$",
+      "dest": "/public/vercel-fallback.html"
+    },
+    {
       "src": "/build/(.*)",
       "dest": "/public/build/$1"
     },
