@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Str;
 
+$isVercel = (bool) env('VERCEL') || (bool) env('VERCEL_ENV');
+
 return [
 
     /*
@@ -15,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_DRIVER', 'file'),
+    'default' => env('CACHE_DRIVER', $isVercel ? 'array' : 'file'),
 
     /*
     |--------------------------------------------------------------------------
@@ -51,8 +53,8 @@ return [
 
         'file' => [
             'driver' => 'file',
-            'path' => storage_path('framework/cache/data'),
-            'lock_path' => storage_path('framework/cache/data'),
+            'path' => env('CACHE_PATH', $isVercel ? '/tmp/framework/cache/data' : storage_path('framework/cache/data')),
+            'lock_path' => env('CACHE_LOCK_PATH', $isVercel ? '/tmp/framework/cache/data' : storage_path('framework/cache/data')),
         ],
 
         'memcached' => [

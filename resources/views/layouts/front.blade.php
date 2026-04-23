@@ -1034,10 +1034,18 @@
         // Always prioritize logo in navbar when available.
         $brandMode = in_array($brandMode, ['logo', 'both'], true) ? $brandMode : 'logo';
     }
-    $quickServices = \App\Models\Service::query()->where('is_active', true)->orderBy('sort_order')->take(7)->get();
-    $frontChatConversation = \App\Models\ChatConversation::query()
-        ->with(['messages' => fn ($query) => $query->latest('id')->limit(40)])
-        ->find(session('front_chat_conversation_id'));
+    $quickServices = rescue(
+        fn () => \App\Models\Service::query()->where('is_active', true)->orderBy('sort_order')->take(7)->get(),
+        collect(),
+        report: false
+    );
+    $frontChatConversation = rescue(
+        fn () => \App\Models\ChatConversation::query()
+            ->with(['messages' => fn ($query) => $query->latest('id')->limit(40)])
+            ->find(session('front_chat_conversation_id')),
+        null,
+        report: false
+    );
     $frontChatMessages = $frontChatConversation
         ? $frontChatConversation->messages->sortBy('id')->values()
         : collect();

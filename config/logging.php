@@ -5,6 +5,8 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
+$isVercel = (bool) env('VERCEL') || (bool) env('VERCEL_ENV');
+
 return [
 
     /*
@@ -18,7 +20,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => env('LOG_CHANNEL', $isVercel ? 'stderr' : 'stack'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +56,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => $isVercel ? ['stderr'] : ['single'],
             'ignore_exceptions' => false,
         ],
 
@@ -124,7 +126,7 @@ return [
         ],
 
         'emergency' => [
-            'path' => storage_path('logs/laravel.log'),
+            'path' => env('LOG_EMERGENCY_PATH', $isVercel ? '/tmp/logs/laravel.log' : storage_path('logs/laravel.log')),
         ],
     ],
 

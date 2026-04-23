@@ -1,5 +1,7 @@
 <?php
 
+$isVercel = (bool) env('VERCEL') || (bool) env('VERCEL_ENV');
+
 return [
 
     /*
@@ -32,15 +34,13 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => env('FILESYSTEM_LOCAL_ROOT', $isVercel ? '/tmp/storage/app' : storage_path('app')),
             'throw' => false,
         ],
 
         'public' => [
             'driver' => 'local',
-            // On this Windows/XAMPP setup, writing directly to public/storage
-            // is more reliable than depending on a symlink/junction.
-            'root' => public_path('storage'),
+            'root' => env('FILESYSTEM_PUBLIC_ROOT', $isVercel ? '/tmp/storage/app/public' : public_path('storage')),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
@@ -72,7 +72,7 @@ return [
     */
 
     'links' => [
-        public_path('storage') => storage_path('app/public'),
+        public_path('storage') => $isVercel ? '/tmp/storage/app/public' : storage_path('app/public'),
     ],
 
 ];

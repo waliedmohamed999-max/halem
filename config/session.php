@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Str;
 
+$isVercel = (bool) env('VERCEL') || (bool) env('VERCEL_ENV');
+
 return [
 
     /*
@@ -18,7 +20,7 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'file'),
+    'driver' => env('SESSION_DRIVER', $isVercel ? 'cookie' : 'file'),
 
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +61,7 @@ return [
     |
     */
 
-    'files' => storage_path('framework/sessions'),
+    'files' => env('SESSION_FILES', $isVercel ? '/tmp/framework/sessions' : storage_path('framework/sessions')),
 
     /*
     |--------------------------------------------------------------------------
